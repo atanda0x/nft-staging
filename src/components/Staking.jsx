@@ -57,7 +57,7 @@ const Staking = () => {
   const stakeAllinCart = async () => {
     if (cart.length < 1) {
       toast.error('Cart is Empty, Stake an NFT', {
-        position: "top-right",
+        position: "bottom-center",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -68,8 +68,23 @@ const Staking = () => {
       return;
     }
     try {
-      await STKContract.stake(cart);
+      let tx = await STKContract.stake(cart);
+      let receipt = await tx.wait()
 
+      if (receipt.status === 1) {
+
+        toast.success('NFT unstaked successfully!', {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        })
+
+        getAllUserNft();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -128,7 +143,7 @@ const Staking = () => {
     const userNft = nfts.filter(obj => obj.contract.address === '0x6928d682911c068fbbcaeb1a409b9ab34fabfb91')
     setUserNfts(userNft);
     setBalance(userNft.length)
-    
+
   }
 
   // Asynchronous functions inside useEffect to fetch user's NFTs
@@ -170,23 +185,27 @@ const Staking = () => {
     let approvedToken = []
     approvedToken.push(tokenId);
     try {
-      await STKContract.stake(approvedToken);
+      let tx = await STKContract.stake(approvedToken);
+      let receipt = await tx.wait()
 
-      toast.success('NFT staked successfully!', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      if (receipt.status === 1) {
+        toast.success('NFT staked successfully!', {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+
     }
     catch (error) {
       console.log(error)
 
       toast.error('Failed to stake token', {
-        position: "top-right",
+        position: "bottom-center",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -203,7 +222,7 @@ const Staking = () => {
     try {
       await STKContract.withdraw(unstaked);
       toast.success('NFT unstaked successfully!', {
-        position: "top-right",
+        position: "bottom-center",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -216,7 +235,7 @@ const Staking = () => {
       console.log(error);
 
       toast.error('Request Failed', {
-        position: "top-right",
+        position: "bottom-center",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -231,22 +250,26 @@ const Staking = () => {
   const getReward = async () => {
 
     try {
-      await STKContract.claimRewards();
-      toast.success('Rewards Claimed successfully!', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      })
+      let tx = await STKContract.claimRewards();
+      let receipt = await tx.wait()
+      if (receipt) {
+        toast.success('Rewards Claimed successfully!', {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        })
+      }
+
     }
     catch (error) {
       console.log(error)
 
       toast.error('Request Failed!', {
-        position: "top-right",
+        position: "bottom-center",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
